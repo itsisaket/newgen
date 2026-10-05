@@ -1,0 +1,651 @@
+/**
+ * DRFIS brand override, layered on top of Material Dashboard 2 v3.2.0
+ * (material-dashboard.min.css, loaded via CDN - see layouts/app.blade.php
+ * and auth/login.blade.php). This file lives directly in public/css/
+ * with no resources/css counterpart, same reasoning as public/js/app.js:
+ * there is no Vite build step wired up yet, so anything served to the
+ * browser has to sit under public/ directly.
+ *
+ * Palette requested: green / white / gold, Kanit for the Thai UI font.
+ * Approach: Material Dashboard's compiled CSS has no theme variables for
+ * its gradients (they're plain hex values baked in at Sass-compile time),
+ * so brand colors are re-mapped by overriding the small set of utility
+ * classes this project actually uses (see grep results before adding
+ * this file) rather than fighting every possible Bootstrap color class.
+ * `bg-gradient-success` already renders Material's own green and is left
+ * alone; `bg-gradient-dark` (used for the sidenav active link and every
+ * card/table gradient header) becomes the brand green, and a new
+ * `bg-gradient-gold` utility is added since the stock theme ships no gold.
+ * `bg-gradient-info` (workflow submit/verify buttons + the M01 area-scope
+ * panel header) is remapped to gold so "in progress" reads as the accent
+ * color rather than Material's default blue. Danger/warning/secondary are
+ * left untouched - red for reject/destructive actions and orange for
+ * "needs revision" are conventional and shouldn't be reassigned just to
+ * fit a 3-color palette.
+ */
+
+:root {
+    --bs-font-sans-serif: 'Kanit', Helvetica, Arial, sans-serif;
+    --drfis-green: #1B5E20;
+    --drfis-green-light: #2E7D32;
+    --drfis-gold: #B8860B;
+    --drfis-gold-light: #D4AF37;
+}
+
+/* material-dashboard.min.css sets these two spots to "Inter" directly
+   instead of through the CSS variable above - cover them explicitly. */
+body,
+.card .card-body,
+.text-sans-serif {
+    font-family: 'Kanit', Helvetica, Arial, sans-serif !important;
+}
+
+/* Brand chrome: sidenav active link + every gradient card/table header
+   in this project uses bg-gradient-dark - remap it from Material's
+   default near-black gradient to the brand green. */
+.bg-gradient-dark {
+    background-image: linear-gradient(195deg, var(--drfis-green-light) 0%, var(--drfis-green) 100%) !important;
+}
+
+.shadow-dark {
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(27, 94, 32, 0.4) !important;
+}
+
+/* Gold accent - the stock theme has no gold gradient, so this project
+   adds one and uses it wherever an accent (as opposed to the primary
+   green chrome) is called for: login card header, one dashboard stat
+   icon, and (via the .bg-gradient-info remap below) every "in progress"
+   workflow action and status badge. */
+.bg-gradient-gold {
+    background-image: linear-gradient(195deg, var(--drfis-gold-light) 0%, var(--drfis-gold) 100%) !important;
+}
+
+.shadow-gold {
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(184, 134, 11, 0.4) !important;
+}
+
+.bg-gradient-info {
+    background-image: linear-gradient(195deg, var(--drfis-gold-light) 0%, var(--drfis-gold) 100%) !important;
+}
+
+.shadow-info {
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(184, 134, 11, 0.4) !important;
+}
+
+.text-gold {
+    color: var(--drfis-gold) !important;
+}
+
+/* Floating-label (input-group-outline) focus/filled state defaults to
+   Material's pink (#e91e63) - switch it to the brand green. */
+.input-group.input-group-outline.is-focused .form-label+.form-control,
+.input-group.input-group-outline.is-filled .form-label+.form-control {
+    border-color: var(--drfis-green-light) !important;
+    box-shadow: inset 1px 0 var(--drfis-green-light), inset -1px 0 var(--drfis-green-light), inset 0 -1px var(--drfis-green-light) !important;
+}
+
+.input-group.input-group-outline.is-focused .form-label,
+.input-group.input-group-outline.is-filled .form-label {
+    color: var(--drfis-green-light) !important;
+}
+
+.input-group.input-group-outline.is-focused .form-label:before,
+.input-group.input-group-outline.is-focused .form-label:after,
+.input-group.input-group-outline.is-filled .form-label:before,
+.input-group.input-group-outline.is-filled .form-label:after {
+    border-top-color: var(--drfis-green-light) !important;
+    box-shadow: inset 0 1px var(--drfis-green-light) !important;
+}
+
+/* Sidenav wordmark accent. */
+.drfis-brand {
+    color: var(--drfis-green) !important;
+    font-weight: 700 !important;
+}
+
+.drfis-brand-mark {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    vertical-align: middle;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: url('../images/durian-smart-orchard-hero.webp') 84% 28% / 260% auto;
+    box-shadow: 0 3px 10px rgba(27, 94, 32, 0.22);
+}
+
+/* Compact visual identity shared by every data-entry/list/detail page. */
+.app-page-visual {
+    position: relative;
+    min-height: 132px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border-radius: 1rem;
+    background: var(--drfis-green);
+    box-shadow: 0 10px 28px rgba(27, 94, 32, 0.14);
+    isolation: isolate;
+}
+
+.app-page-visual > img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% 38%;
+}
+
+.app-page-visual__shade {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(12, 60, 28, 0.96) 0%, rgba(20, 82, 39, 0.74) 45%, rgba(20, 82, 39, 0.18) 100%);
+}
+
+.app-page-visual__content {
+    padding: 1.45rem 2rem;
+    color: #fff;
+}
+
+.app-page-visual__content span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #ffe394;
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+
+.app-page-visual__content span i {
+    font-size: 1rem;
+}
+
+.app-page-visual__content h1 {
+    max-width: 70%;
+    margin: 0.35rem 0 0;
+    color: #fff;
+    font-size: clamp(1.2rem, 2.2vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+/* Sidebar submenu navigation. Only the current work area stays expanded. */
+.nav-submenu {
+    margin: 0.15rem 0.45rem;
+}
+
+.sidenav .nav-submenu__toggle {
+    position: relative;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: #344767 !important;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sidenav .nav-submenu__toggle .material-symbols-rounded {
+    color: inherit !important;
+}
+
+.sidenav .nav-submenu__toggle::after {
+    display: none !important;
+    content: none !important;
+}
+
+.sidenav .nav-submenu__toggle:hover,
+.sidenav .nav-submenu__toggle.active {
+    background: #edf6ee;
+    color: var(--drfis-green) !important;
+}
+
+.nav-submenu__chevron {
+    margin-left: auto;
+    font-size: 1.15rem !important;
+    transition: transform 0.2s ease;
+}
+
+.nav-submenu__toggle[aria-expanded="true"] .nav-submenu__chevron {
+    transform: rotate(180deg);
+}
+
+.nav-submenu__items {
+    position: relative;
+    gap: 0.1rem;
+    margin: 0.2rem 0 0.5rem 1.45rem;
+    padding-left: 0.45rem;
+    border-left: 1px solid #dbe8dc;
+}
+
+.sidenav .nav-submenu__items .nav-link {
+    min-height: 2.4rem;
+    margin: 0;
+    padding: 0.48rem 0.65rem;
+    font-size: 0.78rem;
+}
+
+.sidenav .nav-submenu__items .nav-link .material-symbols-rounded {
+    font-size: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .app-page-visual {
+        min-height: 112px;
+    }
+
+    .app-page-visual__content {
+        padding: 1.25rem;
+    }
+
+    .app-page-visual__content h1 {
+        max-width: 92%;
+    }
+}
+
+/* Searchable select boxes (Choices.js). Keep their visual language aligned
+   with the existing field-control inputs throughout DRFIS. */
+.choices {
+    width: 100%;
+    margin-bottom: 0;
+    font-family: inherit;
+}
+
+.choices__inner {
+    height: 44px;
+    min-height: 44px;
+    padding: 0.45rem 2.25rem 0.4rem 0.7rem;
+    border: 1px solid #d2d6da;
+    border-radius: 0.55rem;
+    background: #fff;
+    color: #344767;
+    font-size: 0.875rem;
+}
+
+.is-focused .choices__inner,
+.is-open .choices__inner {
+    border-color: var(--drfis-green);
+    box-shadow: 0 0 0 2px rgba(29, 122, 53, 0.12);
+}
+
+.choices__list--dropdown,
+.choices__list[aria-expanded] {
+    z-index: 1100;
+    border-color: #d2d6da;
+    border-radius: 0.55rem;
+    box-shadow: 0 12px 28px rgba(52, 71, 103, 0.16);
+}
+
+/* `.field-control { display:block }` otherwise overrides the browser's
+   native [hidden] rule after Choices moves the original select inside its
+   wrapper, producing the doubled/tall control seen in the household form. */
+select.choices__input[hidden],
+select[data-choice="active"] {
+    display: none !important;
+}
+
+.choices[data-type*="select-one"] .choices__inner {
+    padding-bottom: 0.4rem;
+}
+
+.choices__list--single {
+    padding: 0.2rem 1rem 0.2rem 0.25rem;
+}
+
+.choices__input--cloned {
+    border: 1px solid #d2d6da !important;
+    border-radius: 0.4rem;
+    font-family: inherit;
+}
+
+/* Choices 11 keeps its searchable input in the component DOM. Some theme
+   rules can make its bottom border visible while the menu is closed, which
+   looks like a second empty field. Only reveal that input with the menu. */
+.choices:not(.is-open) .choices__input--cloned {
+    display: none !important;
+}
+
+.choices__item--choice.is-highlighted {
+    background: #edf6ee;
+    color: var(--drfis-green);
+}
+
+.drfis-choices-compact {
+    display: inline-block;
+    width: auto;
+    min-width: 12rem;
+    vertical-align: middle;
+}
+
+.drfis-choices-compact .choices__inner {
+    height: 36px;
+    min-height: 36px;
+    padding-top: 0.25rem;
+    padding-bottom: 0.2rem;
+}
+
+/* Use labels as permanent field headings throughout the application.
+   Material Dashboard normally floats these labels inside the input. That
+   treatment becomes hard to scan on long Thai forms and looks inconsistent
+   beside searchable selects, whose labels already sit above the control. */
+.input-group.input-group-outline {
+    display: block;
+}
+
+.input-group.input-group-outline > .form-label {
+    position: static !important;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0 0 0.35rem;
+    padding: 0;
+    transform: none !important;
+    color: #596780 !important;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.4;
+    pointer-events: auto;
+}
+
+.input-group.input-group-outline > .form-label::before,
+.input-group.input-group-outline > .form-label::after {
+    display: none !important;
+    content: none !important;
+}
+
+.input-group.input-group-outline > .form-control {
+    position: static;
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 0.55rem 0.75rem;
+    color: #344767;
+    background-color: #fff;
+    border: 1px solid #d2d6da !important;
+    border-radius: 0.55rem !important;
+    box-shadow: none !important;
+}
+
+.input-group.input-group-outline > textarea.form-control {
+    min-height: 6rem;
+}
+
+.input-group.input-group-outline > .form-control:focus {
+    border-color: var(--drfis-green-light) !important;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12) !important;
+    outline: none;
+}
+
+/**
+ * Plain labeled fields: selects, textareas, native date/file inputs.
+ *
+ * Bug this fixes: material-dashboard.min.css defines `.form-control`
+ * TWICE - an early rule with a normal 1px border, then a later rule
+ * (further down the same file) that resets it to `border: none` and
+ * disables native appearance, because the theme's design assumes every
+ * field is wrapped in `.input-group.input-group-outline`, which draws
+ * its own border. Any plain `<select class="form-control">`,
+ * `<textarea class="form-control">`, or `<input type="date"/"file"
+ * class="form-control">` used OUTSIDE that wrapper - which this project
+ * does throughout (dropdowns, notes fields, the activity-date picker,
+ * evidence upload) - ends up completely invisible: no border, no
+ * background, and for <select> no dropdown arrow either, since
+ * `appearance: none` was meant only for the outline-wrapped text inputs.
+ * That is exactly what showed up as unstyled bare text in the farm
+ * activity form screenshot.
+ *
+ * The floating-label (`input-group-outline`) treatment itself doesn't
+ * fit <select> or <input type="date"> anyway: the JS that floats a
+ * label only ever attaches to `input.form-control` (never `select`),
+ * and a native date input always renders a value/placeholder segment
+ * on screen, so it never reaches the "empty" state the floating label
+ * needs - which is why the date field's label sat on top of its value
+ * instead of moving out of the way. `.field-control` is this project's
+ * plain (non-floating) field style used instead for all of the above.
+ */
+.field-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #67748e;
+    margin-bottom: 0.35rem;
+}
+
+.field-control {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    color: #344767;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #d2d6da !important;
+    border-radius: 0.5rem !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+select.field-control {
+    appearance: auto;
+}
+
+.field-control:focus {
+    border-color: var(--drfis-green-light) !important;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+    outline: none;
+}
+
+.field-control:disabled {
+    background-color: #f8f9fa;
+    opacity: 0.75;
+}
+
+/**
+ * Safety net: a card-header screenshot (users/edit) showed the green
+ * "ข้อมูลบัญชีและบทบาท" header bar bleeding past the right edge of the
+ * browser window while the white card body under it did not. This dev
+ * environment has no live browser to reproduce and pixel-inspect that in,
+ * so rather than guess at the exact rule causing it, this closes off the
+ * whole class of "something renders a few pixels wider than the viewport"
+ * bugs at the page level: it cannot make the header look visually correct
+ * if something really is miscalculating width, but it guarantees nothing
+ * ever bleeds past the browser edge or creates a horizontal scrollbar.
+ * Please send another screenshot after a hard refresh - if the header
+ * still looks off (not just "no longer cut off at the edge"), that means
+ * the true cause is something more specific and needs a closer look.
+ */
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Login hero: generated specifically for DRFIS. The illustration stays
+   decorative while the real page title/form remain semantic HTML. */
+.durian-login-hero {
+    background-image: url('../images/durian-smart-orchard-hero.webp');
+    background-size: cover;
+    background-position: center center;
+}
+
+.durian-login-mask {
+    background: linear-gradient(100deg, rgba(8, 48, 22, 0.80) 0%, rgba(19, 78, 36, 0.56) 45%, rgba(19, 54, 27, 0.28) 100%);
+    opacity: 1;
+}
+
+.durian-login-card {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 24px 70px rgba(8, 35, 17, 0.32);
+    backdrop-filter: blur(9px);
+}
+
+.durian-login-kicker {
+    display: inline-flex;
+    padding: 0.25rem 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.13);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 767.98px) {
+    .durian-login-hero {
+        background-position: 66% center;
+    }
+
+    .durian-login-mask {
+        background: rgba(8, 48, 22, 0.66);
+    }
+}
+
+/* Household registry: task-oriented summary, filters and responsive results. */
+.household-summary__card {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    height: 100%;
+    padding: 1rem 1.1rem;
+    border: 1px solid #e7ece8;
+    border-radius: 0.8rem;
+    background: #fff;
+    box-shadow: 0 5px 18px rgba(52, 71, 103, 0.06);
+}
+
+.household-summary__icon {
+    display: grid;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 0.7rem;
+    font-size: 1.35rem;
+}
+
+.household-summary__icon--green { color: #237a35; background: #eaf5ec; }
+.household-summary__icon--blue { color: #2879a8; background: #eaf4fa; }
+.household-summary__icon--gold { color: #9a6b00; background: #fff6d9; }
+.household-summary__icon--purple { color: #7254a3; background: #f2edfa; }
+
+.household-summary__value {
+    color: #253047;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.household-summary__label {
+    margin-top: 0.2rem;
+    color: #7b8496;
+    font-size: 0.75rem;
+}
+
+.household-filter-card,
+.household-results-card {
+    border: 1px solid #e7ece8;
+    box-shadow: 0 6px 22px rgba(52, 71, 103, 0.06);
+}
+
+.household-table th {
+    padding: 0.75rem 1rem;
+    color: #6c7890;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    white-space: nowrap;
+}
+
+.household-table td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+}
+
+.household-table tbody tr:hover {
+    background: #f7fbf7;
+}
+
+.household-person {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.household-person__avatar {
+    display: grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: 50%;
+    background: #eaf5ec;
+    color: var(--drfis-green-light);
+    font-size: 1.15rem;
+}
+
+.household-count-pill {
+    display: inline-flex;
+    gap: 0.2rem;
+    margin: 0.1rem;
+    padding: 0.28rem 0.5rem;
+    border-radius: 999px;
+    background: #f0f3f5;
+    color: #596780;
+    font-size: 0.7rem;
+    white-space: nowrap;
+}
+
+.household-mobile-list {
+    padding: 0 1rem 1rem;
+}
+
+.household-mobile-card {
+    padding: 1rem 0;
+    border-bottom: 1px solid #edf0f2;
+}
+
+.household-mobile-card:last-child {
+    border-bottom: 0;
+}
+
+.household-mobile-card__meta {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+    color: #667085;
+    font-size: 0.78rem;
+}
+
+.household-mobile-card__meta > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+}
+
+.household-mobile-card__meta .material-symbols-rounded {
+    color: #74907a;
+    font-size: 1rem;
+}
+
+@media (max-width: 575.98px) {
+    .household-summary__card {
+        align-items: flex-start;
+        gap: 0.6rem;
+        padding: 0.8rem;
+    }
+
+    .household-summary__icon {
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
+        font-size: 1.05rem;
+    }
+
+    .household-summary__value {
+        font-size: 1.1rem;
+    }
+}

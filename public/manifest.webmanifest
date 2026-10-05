@@ -1,0 +1,9 @@
+{
+  "name": "DRFIS",
+  "short_name": "DRFIS",
+  "start_url": "./dashboard",
+  "display": "standalone",
+  "background_color": "#f5f6f8",
+  "theme_color": "#2e7d32",
+  "lang": "th"
+}

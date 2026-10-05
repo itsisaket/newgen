@@ -1,0 +1,2 @@
+/* Sprint 1 currently loads Bootstrap 5 from CDN in resources/views/layouts/app.blade.php.
+   Move to a compiled build here once custom styling/offline UI (Blueprint 3.2) begins. */

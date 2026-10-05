@@ -1,0 +1,584 @@
+/**
+ * DRFIS Dashboard kit (23 ก.ย. round) - one visual system for the merged
+ * Dashboard (ภาพรวม + 6 มุมมอง). Loaded after drfis-theme.css.
+ *
+ * Chart colours are defined ONCE here as --viz-* tokens and read by
+ * public/js/drfis-charts.js, so a colour change never needs a JS edit.
+ * Every chart slot below was checked with the dataviz palette validator
+ * against the white card surface (#ffffff):
+ *   - categorical  #2e7d32, #b8860b, #2a78d6  -> all checks pass
+ *     (worst adjacent CVD dE 8.1, normal-vision dE 18.9, all >= 3:1)
+ *   - ordinal      #7fbf83 -> #4f9f55 -> #2e7d32 -> #1b5e20 (workflow
+ *     stages ร่าง -> ส่งแล้ว -> ตรวจสอบแล้ว -> อนุมัติแล้ว) -> passes,
+ *     light end 2.17:1 on white
+ * Single-series bar charts always use --viz-series-1 (brand green) for
+ * every bar - bar length already encodes the value, so colour is never
+ * used to re-encode magnitude on nominal categories.
+ *
+ * The app has no dark theme, so only the light set is defined.
+ */
+:root {
+    --viz-surface: #ffffff;
+    --viz-series-1: #2e7d32;
+    --viz-series-2: #b8860b;
+    --viz-series-3: #2a78d6;
+    --viz-series-1-hover: #43964a;
+
+    --viz-ord-1: #7fbf83;
+    --viz-ord-2: #4f9f55;
+    --viz-ord-3: #2e7d32;
+    --viz-ord-4: #1b5e20;
+    --viz-flag: #b8860b;
+
+    --viz-status-good: #0ca30c;
+    --viz-status-critical: #d03b3b;
+    --viz-neutral: #c3c2b7;
+
+    --viz-ink: #344767;
+    --viz-ink-2: #67748e;
+    --viz-muted: #8a8f98;
+    --viz-grid: #eceae4;
+    --viz-axis: #c3c2b7;
+    --viz-track: #e8f3e9;
+    --viz-hairline: rgba(52, 71, 103, 0.10);
+    --viz-shadow: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+    --viz-shadow-hover: 0 6px 16px rgba(16, 24, 40, 0.08);
+}
+
+/* ---------- Page header + tabs (one filter row above everything) ---------- */
+.dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin: 0 0 1rem;
+}
+.dash-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--drfis-green-light, #2e7d32);
+    margin: 0 0 0.15rem;
+}
+.dash-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--viz-ink);
+    margin: 0;
+    line-height: 1.2;
+}
+.dash-sub {
+    font-size: 0.875rem;
+    color: var(--viz-ink-2);
+    margin: 0.25rem 0 0;
+}
+.dash-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+.dash-filter label {
+    font-size: 0.8125rem;
+    color: var(--viz-ink-2);
+    margin: 0;
+    white-space: nowrap;
+}
+.dash-filter .field-control {
+    min-width: 180px;
+    max-width: 260px;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+/* ---------- Project story hero ---------- */
+.orchard-welcome {
+    position: relative;
+    min-height: 320px;
+    overflow: hidden;
+    margin: 0 0 1.5rem;
+    border-radius: 1rem;
+    background: #173d25;
+    box-shadow: 0 14px 34px rgba(22, 70, 37, 0.16);
+    isolation: isolate;
+}
+
+.orchard-welcome > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 54%;
+    z-index: -2;
+}
+
+.orchard-welcome__shade {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(10, 50, 25, 0.94) 0%, rgba(15, 65, 31, 0.78) 38%, rgba(15, 65, 31, 0.22) 68%, rgba(0, 0, 0, 0.04) 100%);
+}
+
+.orchard-welcome__content {
+    width: min(540px, 58%);
+    padding: 2.25rem 2.5rem;
+    color: #fff;
+}
+
+.orchard-welcome__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.65rem;
+    color: #ffe394;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.orchard-welcome__eyebrow .material-symbols-rounded {
+    font-size: 1rem;
+}
+
+.orchard-welcome h2 {
+    margin: 0 0 0.65rem;
+    color: #fff;
+    font-size: clamp(1.65rem, 3vw, 2.45rem);
+    font-weight: 600;
+    line-height: 1.18;
+    text-wrap: balance;
+}
+
+.orchard-welcome p {
+    max-width: 480px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+
+.orchard-welcome__areas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 1rem;
+}
+
+.orchard-welcome__areas span {
+    padding: 0.3rem 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 0.72rem;
+    backdrop-filter: blur(5px);
+}
+
+@media (max-width: 767.98px) {
+    .orchard-welcome {
+        min-height: 360px;
+    }
+
+    .orchard-welcome > img {
+        object-position: 66% center;
+    }
+
+    .orchard-welcome__shade {
+        background: linear-gradient(0deg, rgba(9, 45, 22, 0.96) 0%, rgba(9, 45, 22, 0.72) 58%, rgba(9, 45, 22, 0.12) 100%);
+    }
+
+    .orchard-welcome__content {
+        position: absolute;
+        inset: auto 0 0;
+        width: 100%;
+        padding: 1.4rem 1.25rem;
+    }
+
+    .orchard-welcome h2 {
+        font-size: 1.55rem;
+    }
+
+    .orchard-welcome p {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+}
+
+.dash-tabs {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    padding: 0.3rem;
+    margin-bottom: 1.5rem;
+    background: var(--viz-surface);
+    border-radius: 0.75rem;
+    box-shadow: var(--viz-shadow);
+    scrollbar-width: thin;
+}
+.dash-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.55rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--viz-ink-2);
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.dash-tab .material-symbols-rounded {
+    font-size: 1.1rem;
+}
+.dash-tab:hover,
+.dash-tab:focus-visible {
+    background: #f1f6f1;
+    color: var(--viz-ink);
+}
+.dash-tab.active {
+    background: var(--drfis-green, #1b5e20);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(27, 94, 32, 0.25);
+}
+
+.dash-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--viz-muted);
+    margin: 0.5rem 0 0.75rem;
+}
+
+/* ---------- KPI tiles ---------- */
+.kpi-tile {
+    height: 100%;
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    padding: 1rem 1.1rem;
+    background: var(--viz-surface);
+    border-radius: 0.75rem;
+    box-shadow: var(--viz-shadow);
+    border-top: 3px solid var(--kpi-accent);
+    color: inherit;
+    text-decoration: none;
+    transition: box-shadow 0.15s ease;
+}
+a.kpi-tile:hover,
+a.kpi-tile:focus-visible {
+    box-shadow: var(--viz-shadow-hover);
+}
+.kpi-tile__icon {
+    flex: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: grid;
+    place-items: center;
+    border-radius: 0.6rem;
+    background: var(--kpi-accent-soft);
+    color: var(--kpi-accent);
+}
+.kpi-tile__icon .material-symbols-rounded {
+    font-size: 1.35rem;
+}
+.kpi-tile__body {
+    min-width: 0;
+    flex: 1;
+}
+.kpi-tile__label {
+    font-size: 0.8125rem;
+    color: var(--viz-ink-2);
+    margin: 0 0 0.15rem;
+}
+.kpi-tile__value {
+    font-size: 1.625rem;
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--viz-ink);
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+.kpi-tile__unit {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--viz-ink-2);
+    margin-left: 0.3rem;
+}
+.kpi-tile__sub {
+    font-size: 0.75rem;
+    color: var(--viz-muted);
+    margin: 0.3rem 0 0;
+}
+.kpi-tile--green { --kpi-accent: #2e7d32; --kpi-accent-soft: #e8f3e9; }
+.kpi-tile--gold  { --kpi-accent: #9a7009; --kpi-accent-soft: #fbf3dc; }
+.kpi-tile--blue  { --kpi-accent: #1c5cab; --kpi-accent-soft: #e6effb; }
+.kpi-tile--slate { --kpi-accent: #344767; --kpi-accent-soft: #eef0f4; }
+
+/* Meter: a ratio against a limit (adoption %, KPI %, ALP x/5). Fill and
+   track are two steps of the same green ramp. */
+.kpi-meter {
+    height: 6px;
+    margin-top: 0.55rem;
+    border-radius: 3px;
+    background: var(--viz-track);
+    overflow: hidden;
+}
+.kpi-meter > span {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--viz-series-1);
+}
+
+/* ---------- Chart / content cards ---------- */
+.viz-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--viz-surface);
+    border-radius: 0.75rem;
+    box-shadow: var(--viz-shadow);
+}
+.viz-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem 0.25rem;
+}
+.viz-card__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--viz-ink);
+    margin: 0;
+}
+.viz-card__sub {
+    font-size: 0.75rem;
+    color: var(--viz-muted);
+    margin: 0.15rem 0 0;
+}
+.viz-card__body {
+    flex: 1;
+    padding: 0.6rem 1.1rem 1rem;
+}
+.viz-card__body--flush {
+    padding-left: 0;
+    padding-right: 0;
+}
+.viz-card__foot {
+    font-size: 0.75rem;
+    color: var(--viz-muted);
+    padding: 0 1.1rem 1rem;
+    margin: 0;
+}
+.viz-card__toggle {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--viz-ink-2);
+    background: var(--viz-surface);
+    border: 1px solid #e3e1da;
+    border-radius: 0.4rem;
+    padding: 0.2rem 0.55rem;
+    cursor: pointer;
+}
+.viz-card__toggle .material-symbols-rounded {
+    font-size: 1rem;
+}
+.viz-card__toggle:hover,
+.viz-card__toggle[aria-pressed="true"] {
+    background: #f1f6f1;
+    color: var(--viz-ink);
+}
+.viz-canvas-wrap {
+    position: relative;
+    width: 100%;
+}
+.viz-empty {
+    display: grid;
+    place-items: center;
+    min-height: 160px;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--viz-muted);
+    background: #fafaf8;
+    border-radius: 0.5rem;
+}
+
+/* Table view twin of every chart + plain dashboard tables. */
+.viz-table {
+    width: 100%;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--viz-ink);
+    border-collapse: collapse;
+}
+.viz-table th {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--viz-muted);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--viz-hairline);
+    text-align: left;
+    white-space: nowrap;
+}
+.viz-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--viz-hairline);
+    vertical-align: middle;
+}
+.viz-table td:first-child {
+    white-space: nowrap; /* names scroll sideways instead of breaking per word */
+}
+.viz-table tr:last-child td {
+    border-bottom: 0;
+}
+.viz-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.viz-table tfoot td {
+    font-weight: 600;
+    border-top: 1px solid var(--viz-hairline);
+}
+.viz-table a {
+    color: var(--viz-ink);
+    font-weight: 500;
+}
+.viz-table a:hover {
+    color: var(--drfis-green-light, #2e7d32);
+}
+.viz-table-scroll {
+    overflow-x: auto;
+}
+
+/* In-cell data bar: the number stays readable text, the bar behind it
+   shows relative size across the column. */
+.data-bar {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    min-width: 7rem;
+    max-width: 11rem;
+    margin-left: auto;
+    padding: 0.1rem 0.35rem;
+}
+.data-bar > span {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 14px;
+    transform: translateY(-50%);
+    border-radius: 0 4px 4px 0;
+    background: var(--viz-track);
+}
+.data-bar > em {
+    position: relative;
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Delta chip (forecast variance): glyph + sign so direction never relies
+   on colour alone. */
+.delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+.delta--up { color: #006300; }
+.delta--down { color: #b42318; }
+
+/* ---------- Stacked status bar (part-to-whole of a workflow) ---------- */
+.status-block + .status-block {
+    margin-top: 1.1rem;
+}
+.status-block .kpi-meter {
+    height: 12px;
+    border-radius: 6px;
+    margin-top: 0;
+}
+.status-block .kpi-meter > span {
+    border-radius: 6px;
+}
+.status-block__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.4rem;
+    font-size: 0.8125rem;
+    color: var(--viz-ink);
+    font-weight: 500;
+}
+.status-block__head small {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--viz-muted);
+}
+.status-bar {
+    display: flex;
+    gap: 2px; /* surface gap between segments */
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f0efec;
+}
+.status-bar__seg {
+    min-width: 4px;
+}
+.status-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin-top: 0.55rem;
+    font-size: 0.78rem;
+    color: var(--viz-ink-2);
+}
+.status-legend__item.is-zero {
+    opacity: 0.5;
+}
+.status-legend__key {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 0.35rem;
+    vertical-align: -1px;
+}
+.status-legend strong {
+    font-weight: 600;
+    color: var(--viz-ink);
+    margin-left: 0.2rem;
+}
+
+/* ---------- Map ---------- */
+.dash-map {
+    height: 380px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+@media (max-width: 575.98px) {
+    .dash-title { font-size: 1.25rem; }
+    /* KPI tiles go two-per-row on phones (col-6) - drop the decorative
+       icon so the number keeps the width. */
+    .kpi-tile { padding: 0.8rem 0.85rem; }
+    .kpi-tile__icon { display: none; }
+    .kpi-tile__value { font-size: 1.3rem; }
+    .dash-filter { width: 100%; }
+    .dash-filter .field-control { max-width: none; flex: 1; }
+}
